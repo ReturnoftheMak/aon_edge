@@ -36,7 +36,5 @@ msno.heatmap(df_list[0].sample(250))
 msno.bar(df_list[0].sample(1000))
 
 
-# %% export raw tables to sql
-
-# Need to define whether year of account should be separated
+# %% 
 
