@@ -4,9 +4,12 @@
 import glob
 import pandas as pd
 from pathlib import Path
+from sql_connection import sql_connection
 
 
 # %% Files area
+
+sqlcon = sql_connection('tscpmSMDB02', 'PricingDevelopment')
 
 directory = r"\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly"
 
@@ -22,40 +25,57 @@ claims_bdx = glob.glob(directory + r"\**\Claims\*.xls*")
 
 # %% Get the column names
 
-def get_col_names(bdx_list):
+def get_col_names_by_month_and_unique(bdx_list, header_var=0):
     """Retrieve list of column names from the list of bdx provided
     """
 
-    col_names = {}
+    col_names_dict = {}
+    col_names_unique = []
 
     bdx_list = [file for file in bdx_list if "$" not in file]
     
     for file in bdx_list:
 
-        df = pd.read_excel(file)
+        df = pd.read_excel(file, header=header_var)
 
-        bdx_month = Path(risk_bdx[0]).parent.parent.stem
+        bdx_month = Path(file).parent.parent.stem
+        col_names_dict[bdx_month] = df.columns
 
-        col_names[bdx_month] = df.columns
+        new_names = [col for col in df.columns if col not in col_names_unique]
+        for name in new_names:
+            col_names_unique.append(name)
     
-    return col_names
+    return col_names_dict, col_names_unique
 
 
-risk_col_names = get_col_names(risk_bdx)
-premium_col_names = get_col_names(premium_bdx)
-claim_col_names = get_col_names(claims_bdx)
+# %% run for excel bdx
+
+risk_col_names_by_month, risk_col_names_unique = get_col_names_by_month_and_unique(risk_bdx)
+premium_col_names_by_month, premium_col_names_unique = get_col_names_by_month_and_unique(premium_bdx)
+claim_col_names_by_month, claim_col_names_unique = get_col_names_by_month_and_unique(claims_bdx, 2)
+
+
+# %% Also need to get data from the database
+
+# df_old = 
 
 
 # %% Export column names to excel
 
-risk_col = pd.DataFrame.from_dict(risk_col_names, orient='index')
-risk_col.to_excel(r"\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\risk_column_headers.xlsx")
+risk_col = pd.DataFrame.from_dict(risk_col_names_by_month, orient='index')
+risk_col.to_excel(r"\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\risk_column_headers_all.xlsx", sheet_name='names_by_month')
+risk_col_unique = pd.DataFrame(risk_col_names_unique, columns=['ColumnNames'])
+risk_col_unique.to_excel(r"\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\risk_column_headers_unique.xlsx", sheet_name='unique_names')
 
-premium_col = pd.DataFrame(premium_col_names, columns=['ColumnHeader'])
-premium_col.to_excel(r"\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\premium_column_headers.xlsx")
+premium_col = pd.DataFrame.from_dict(premium_col_names_by_month, orient='index')
+premium_col.to_excel(r"\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\premium_column_headers.xlsx", sheet_name='names_by_month')
+premium_col_unique = pd.DataFrame(premium_col_names_unique, columns=['ColumnNames'])
+premium_col_unique.to_excel(r"\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\premium_column_headers_unique.xlsx", sheet_name='unique_names')
 
-claim_col = pd.DataFrame(claim_col_names, columns=['ColumnHeader'])
-claim_col.to_excel(r"\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\claim_column_headers.xlsx")
+claim_col = pd.DataFrame.from_dict(claim_col_names_by_month, orient='index')
+claim_col.to_excel(r"\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\claim_column_headers.xlsx", sheet_name='names_by_month')
+claim_col_unique = pd.DataFrame(claim_col_names_unique, columns=['ColumnNames'])
+claim_col_unique.to_excel(r"\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\claim_column_headers_unique.xlsx", sheet_name='unique_names')
 
 
 # %%
