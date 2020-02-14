@@ -59,7 +59,7 @@ claim_col_names_by_month, claim_col_names_unique = get_col_names_by_month_and_un
 
 # Weirdly can't connect, not sure whats going on here, try again later
 
-df_risk_col_names_old = pd.read_sql_table('NFSRiskBdx201904', sqlcon, schema='bdx', chunksize=1000)
+df_risk_col_names_old = pd.read_sql_query('select * from bdx.NFSRiskBdx201904', sqlcon)
 risk_col_names_old = df_risk_col_names_old.columns
 
 
