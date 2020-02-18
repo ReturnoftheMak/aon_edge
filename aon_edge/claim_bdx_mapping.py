@@ -44,17 +44,17 @@ def claims_bdx_clean(file, mapping_dict):
 
     # Total checks on Incurred
     incurred_check = round(df.Incurred,0) == round(df.Incurred_Indemnity + df.Incurred_Expenses + df.Incurred_TPA_Fees, 0)
-    df_false = df[~incurred_check]
+    df_false_inc = df[~incurred_check]
 
     # Need to also check on the policy ID at some point
 
-    if len(df_false) > 0:
-        print('Output rejected due to {0} rows not matching on Incurred values'.format(len(df_false)))
-        test = False
+    if len(df_false_inc) > 0:
+        print('Output rejected due to {0} rows not matching on Incurred values'.format(len(df_false_inc)))
+        test_inc = False
     else:
-        test = True
+        test_inc = True
 
-    return test, df
+    return df, test_inc, df_false_inc
 
 
 # %%
