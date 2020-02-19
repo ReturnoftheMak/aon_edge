@@ -89,5 +89,28 @@ class RiskBdxCleaner(BdxCleaner):
         """
         # May need to test if these in bdx first
         df = df.drop(labels=['Name_Broker'], axis=1)
+        return df
+    
+
+    def prior_loss_flag(self, df):
+        """Needs populating
+        """
+        pass
+
+
+    def renewed_flag(self, df):
+        """This may actually need some more inputs
+        """
+        pass
+
+
+    def username_input(self, df):
+        """Add in a username for running code
+        """
+
+        from getpass import getuser
+        user = getuser()
+        df['user'] = user
+        return df
     
 
