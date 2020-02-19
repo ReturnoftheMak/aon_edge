@@ -1,7 +1,7 @@
 # %% Package Imports
 
 import pandas as pd
-
+from sql_connection import sql_connection
 
 
 # %% Global vars, probably best to define in main
@@ -14,7 +14,9 @@ mappings = {'claim':r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pric
 # %% Lets try to make use of inheritance here
 
 class BdxCleaner(object):
-    def __init__(self, bdx_type, bdx_file, mappings):
+    """Base Class for cleaning bordereaux for AON Edge
+    """
+    def __init__(self, bdx_file, mappings, bdx_type):
         self.bdx_type = bdx_type
         self.file = bdx_file
         self.mappings = mappings
@@ -50,11 +52,21 @@ class BdxCleaner(object):
         df = df.rename(columns=self.get_mapping())
         df = df[[col for col in df.columns if type(col) is not float]]
 
-        # GDPR drop fields
-        df = df.drop(labels=['Name_Claimant', 'Name_Insured'], axis=1)
-
         # Drop any subtotal rows
         df.dropna(axis=0, how='any', subset='ID_Claim', inplace=True)
+
+        return df
+
+
+    def export_to_sql(self, df, server_name, database_name, table_name):
+        """Exports the cleaned dataframe to sql, replacing the old version if existing
+        """
+
+        sql_con = sql_connection(server_name, database_name)
+
+        df.to_sql(table_name, sql_con, if_exists='replace')
     
+
+    #
 
 

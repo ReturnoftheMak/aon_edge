@@ -1,6 +1,7 @@
 # %% Package Imports
 
 import pandas as pd
+from general_bdx_clean import BdxCleaner
 
 
 # %% Set Params
@@ -34,5 +35,59 @@ def risk_bdx_clean(file, mapping_dict):
     # Possibly other checks to be done
 
 
+# %%
 
+class RiskBdxCleaner(BdxCleaner):
+    """Used to clean AON Edge Claims bordereaux, inherits methods from BdxCleaner
+    """
+    def __init__(self, bdx_file, mappings, bdx_type='risk'):
+        self.bdx_type = bdx_type
+        self.file = bdx_file
+        self.mappings = mappings
+    
+
+    def policy_ID_formatting(self, df):
+        """Change the id based on Grace's rules, possibly map to 2 cols
+        """
+        pass
+
+
+    def new_or_renewal(self, df):
+        """Map any rows which are not 'New' or 'Renewal'
+        """
+
+        # could use a fillna here? but with what?
+        pass
+
+
+    def premium_checks(self, df):
+        """Check premium by policy against premium bordereaux
+        """
+        pass
+
+
+    def flood_score_populate(self, df):
+        """Where blank, may need to use a different source to populate
+        """
+        pass
+
+
+    def add_bdx_date(self, df):
+        """Add the bordereaux month as a column
+        """
+        pass
+
+
+    def locname_split(self, df):
+        """Need to turn this into policy ID?
+        """
+        pass
+
+
+    def drop_gdpr_fields(self, df):
+        """Drop GDPR sensitive fields
+        """
+        # May need to test if these in bdx first
+        df = df.drop(labels=['Name_Broker'], axis=1)
+    
 
