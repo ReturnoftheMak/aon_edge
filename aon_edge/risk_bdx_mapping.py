@@ -75,7 +75,8 @@ class RiskBdxCleaner(BdxCleaner):
 
 
     def add_bdx_date(self):
-        """Add the bordereaux month as a column
+        """Add the bordereaux month as a column, 
+        logic stated was to use last day of the month as the date.
         """
         pass
 

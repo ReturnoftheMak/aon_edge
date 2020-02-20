@@ -40,11 +40,15 @@ class BdxCleaner(object):
 
 
     def basic_cleaning(self):
-        """Cleaning steps to be applied to any bordereaux, utilising mappings
+        """Cleaning steps to be applied to any bordereaux, utilising mappings.
+        Reads in the excel file, taking the first sheet only, with a header row based on type of bdx.
+        Then utilises the column mapping to rename the columns and drop any columns which were not mapped.
+        Lastly the function drops any 
         """
 
         # Lookup the header row to use, maybe we shouldn't hard code these
         var_dict = {'claim':2,'risk':0,'premium':0}
+        id_dict = {'claim':'ID_Claim', 'risk':'ID_PolicyStem', 'premium':'ID_PolicyStem'}
 
         # Read the excel in with specified vars
         df = pd.read_excel(self.file, sheet_name=0, header=var_dict[self.bdx_type])
@@ -54,7 +58,7 @@ class BdxCleaner(object):
         df = df[[col for col in df.columns if type(col) is not float]]
 
         # Drop any subtotal rows
-        df.dropna(axis=0, how='any', subset='ID_Claim', inplace=True)
+        df.dropna(axis=0, how='any', subset=id_dict[self.bdx_type], inplace=True)
 
         return df
 
