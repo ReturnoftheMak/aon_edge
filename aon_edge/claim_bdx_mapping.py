@@ -68,6 +68,7 @@ class ClaimBdxCleaner(BdxCleaner):
         self.mappings = mappings
         self.bdx_type = 'claim'
         self.dataframe = self.basic_cleaning()
+        self.test_var = True
 
 
     def incurred_check(self):
@@ -79,24 +80,19 @@ class ClaimBdxCleaner(BdxCleaner):
         df_false_inc = self.dataframe[~incurred_check]
 
         if len(df_false_inc) > 0:
-            print('Output rejected due to {0} rows not matching on Incurred values'.format(len(df_false_inc)))
+            print('Output rejected due to {0} rows not matching on Incurred values\nRejected rows exported to Rejected_Files directory'.format(len(df_false_inc)))
             test_inc = False
         else:
             test_inc = True
+            print('Incurred values match to nearest integer, test passed!')
         
         return test_inc, df_false_inc
 
 
     def other_claims_checks(self):
-        """Enter other checks here
+        """Enter other checks here or in similar functions
         """
-        pass
-
-
-    def run_checks(self):
-        """Run all the checks sequentially with outputs on errors if any
-        """
-        pass
+        return True
 
 
     def drop_gdpr_fields(self):
@@ -106,8 +102,49 @@ class ClaimBdxCleaner(BdxCleaner):
         self.dataframe = self.dataframe.drop(labels=['Name_Claimant', 'Name_Insured'], axis=1)
 
 
+    def run_all_checks(self):
+        """This is for running all the checks you might need in a sequential fashion
+        that breaks once a test fails.
+        """
+        # First check that the incurred matches
+        test_inc, df_false_inc = self.incurred_check()
+        self.test_var = test_inc
+
+        if self.test_var:
+            pass
+        else:
+            df_false_inc.to_excel(r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\Rejected_Files\claims_incurred_non_matching.xlsx')
+        
+        # Run the other checks in a similar way, but we only run the test function 
+        # if the test_var is true which is to say the previous test has passed
+        if self.test_var:
+            test_result_example = self.other_claims_checks()
+            self.test_var = test_result_example
+            if self.test_var:
+                pass
+            else:
+                # Run the rejection output if necessary
+                pass
+        else:
+            pass
+
+        # After all the tests have run
+        if self.test_var:
+            print('All tests have passed!')
+        else:
+            print('Bordereaux rejected.')
+    
+
+    def run_all_processing_functions(self):
+        """Once all the tests have passed, we can run all the processing steps.
+        """
+        # Maybe add a print output to this one?
+        self.drop_gdpr_fields()
+
+    
 
 
+# %% Actually running the class
 
 
 

@@ -45,7 +45,8 @@ class RiskBdxCleaner(BdxCleaner):
         self.mappings = mappings
         self.bdx_type = 'risk'
         self.dataframe = self.basic_cleaning()
-    
+        self.test_var = True
+
 
     def policy_ID_formatting(self):
         """Change the id based on Grace's rules, possibly map to 2 cols
@@ -90,7 +91,7 @@ class RiskBdxCleaner(BdxCleaner):
         """
         # May need to test if these are in bdx first
         self.dataframe = self.dataframe.drop(labels=['Name_Broker'], axis=1)
-    
+
 
     def prior_loss_flag(self):
         """Needs populating
@@ -107,11 +108,37 @@ class RiskBdxCleaner(BdxCleaner):
     def username_input(self):
         """Add in a username for whoever ran the code
         """
-
         from getpass import getuser
         user = getuser()
         self.dataframe['Updated_Name'] = user
-    
-    #
-    
+
+
+    def date_code_run(self):
+        """Adding in a run date for the df.
+        May need to be done just prior to upload after all checks have passed
+        """
+        from datetime import date
+        today = date.today()
+        self.dataframe['Updated_Date'] = today
+
+
+    def add_file_name(self):
+        """Add in the name of the file into the dataframe
+        """
+        from pathlib import Path
+        file_name = Path(self.file).stem
+        self.dataframe['Updated_Source'] = file_name
+
+
+    def run_all_checks(self):
+        """This is for running all the checks you might need in a sequential fashion
+        that breaks once a test fails.
+        """
+        # Order the tests sequentially here with conditional passes and updates to self.test_var
+
+        # After all the tests have run
+        if self.test_var:
+            print('All tests have passed!')
+        else:
+            print('Bordereaux rejected.')
 

@@ -27,7 +27,7 @@ def premium_bdx_clean(file, mapping_dict):
     #
 
 
-# %%
+# %% Define class for premium
 
 class PremiumBdxCleaner(BdxCleaner):
     """Used to clean AON Edge Premium bordereaux, inherits methods from BdxCleaner
@@ -45,5 +45,12 @@ class PremiumBdxCleaner(BdxCleaner):
 
     def funcname2(self, parameter_list):
         pass
+
+
+    def drop_gdpr_fields(self):
+        """Drop GDPR sensitive fields
+        """
+        # May need to test if these are in bdx first
+        # self.dataframe = self.dataframe.drop(labels=[''], axis=1)
 
 
