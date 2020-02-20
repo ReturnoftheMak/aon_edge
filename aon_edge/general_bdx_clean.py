@@ -17,9 +17,10 @@ class BdxCleaner(object):
     """Base Class for cleaning bordereaux for AON Edge
     """
     def __init__(self, bdx_file, mappings, bdx_type):
-        self.bdx_type = bdx_type
         self.file = bdx_file
         self.mappings = mappings
+        self.bdx_type = bdx_type
+        self.dataframe = self.basic_cleaning()
 
 
     def get_mapping(self):
@@ -39,7 +40,7 @@ class BdxCleaner(object):
 
 
     def basic_cleaning(self):
-        """Cleaning steps to be applied to any bordereaux
+        """Cleaning steps to be applied to any bordereaux, utilising mappings
         """
 
         # Lookup the header row to use, maybe we shouldn't hard code these

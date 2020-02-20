@@ -38,21 +38,22 @@ def risk_bdx_clean(file, mapping_dict):
 # %%
 
 class RiskBdxCleaner(BdxCleaner):
-    """Used to clean AON Edge Claims bordereaux, inherits methods from BdxCleaner
+    """Used to clean AON Edge Risk bordereaux, inherits methods from BdxCleaner
     """
-    def __init__(self, bdx_file, mappings, bdx_type='risk'):
-        self.bdx_type = bdx_type
+    def __init__(self, bdx_file, mappings):
         self.file = bdx_file
         self.mappings = mappings
+        self.bdx_type = 'risk'
+        self.dataframe = self.basic_cleaning()
     
 
-    def policy_ID_formatting(self, df):
+    def policy_ID_formatting(self):
         """Change the id based on Grace's rules, possibly map to 2 cols
         """
         pass
 
 
-    def new_or_renewal(self, df):
+    def new_or_renewal(self):
         """Map any rows which are not 'New' or 'Renewal'
         """
 
@@ -60,57 +61,57 @@ class RiskBdxCleaner(BdxCleaner):
         pass
 
 
-    def premium_checks(self, df):
+    def premium_checks(self):
         """Check premium by policy against premium bordereaux
         """
         pass
 
 
-    def flood_score_populate(self, df):
+    def flood_score_populate(self):
         """Where blank, may need to use a different source to populate
         """
         pass
 
 
-    def add_bdx_date(self, df):
+    def add_bdx_date(self):
         """Add the bordereaux month as a column
         """
         pass
 
 
-    def locname_split(self, df):
+    def locname_split(self):
         """Need to turn this into policy ID?
         """
         pass
 
 
-    def drop_gdpr_fields(self, df):
+    def drop_gdpr_fields(self):
         """Drop GDPR sensitive fields
         """
-        # May need to test if these in bdx first
-        df = df.drop(labels=['Name_Broker'], axis=1)
-        return df
+        # May need to test if these are in bdx first
+        self.dataframe = self.dataframe.drop(labels=['Name_Broker'], axis=1)
     
 
-    def prior_loss_flag(self, df):
+    def prior_loss_flag(self):
         """Needs populating
         """
         pass
 
 
-    def renewed_flag(self, df):
+    def renewed_flag(self):
         """This may actually need some more inputs
         """
         pass
 
 
-    def username_input(self, df):
-        """Add in a username for running code
+    def username_input(self):
+        """Add in a username for whoever ran the code
         """
 
         from getpass import getuser
         user = getuser()
-        df['user'] = user
-        return df
+        self.dataframe['Updated_Name'] = user
+    
+    #
     
 

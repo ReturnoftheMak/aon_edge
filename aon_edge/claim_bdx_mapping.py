@@ -63,19 +63,20 @@ def claims_bdx_clean(file, mapping_dict):
 class ClaimBdxCleaner(BdxCleaner):
     """Used to clean AON Edge Claims bordereaux, inherits methods from BdxCleaner
     """
-    def __init__(self, bdx_file, mappings, bdx_type='claim'):
-        self.bdx_type = bdx_type
+    def __init__(self, bdx_file, mappings):
         self.file = bdx_file
         self.mappings = mappings
+        self.bdx_type = 'claim'
+        self.dataframe = self.basic_cleaning()
 
 
-    def incurred_check(self, df):
+    def incurred_check(self):
         """Does the incurred approximately match in all rows?
         If not, export the rows which do not to an error log.
         """
 
-        incurred_check = round(df.Incurred,0) == round(df.Incurred_Indemnity + df.Incurred_Expenses + df.Incurred_TPA_Fees, 0)
-        df_false_inc = df[~incurred_check]
+        incurred_check = round(self.dataframe.Incurred,0) == round(self.dataframe.Incurred_Indemnity + self.dataframe.Incurred_Expenses + self.dataframe.Incurred_TPA_Fees, 0)
+        df_false_inc = self.dataframe[~incurred_check]
 
         if len(df_false_inc) > 0:
             print('Output rejected due to {0} rows not matching on Incurred values'.format(len(df_false_inc)))
@@ -98,11 +99,11 @@ class ClaimBdxCleaner(BdxCleaner):
         pass
 
 
-    def drop_gdpr_fields(self, df):
+    def drop_gdpr_fields(self):
         """Drop GDPR sensitive fields
         """
         # May need to test if these in bdx first
-        df = df.drop(labels=['Name_Claimant', 'Name_Insured'], axis=1)
+        self.dataframe = self.dataframe.drop(labels=['Name_Claimant', 'Name_Insured'], axis=1)
 
 
 
