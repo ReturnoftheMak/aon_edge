@@ -46,6 +46,7 @@ class RiskBdxCleaner(BdxCleaner):
         self.bdx_type = 'risk'
         self.dataframe = self.basic_cleaning()
         self.test_var = True
+        self.new_renewal_mapping = {}
 
 
     def policy_ID_formatting(self):
@@ -57,8 +58,21 @@ class RiskBdxCleaner(BdxCleaner):
     def new_or_renewal(self):
         """Map any rows which are not 'New' or 'Renewal'
         """
+        from fuzzywuzzy import fuzz
+        import json
 
         # could use a fillna here? but with what?
+        # use fuzz.partial_ratio to compare to New/Renewal
+        # Require a certain threshold, request confirmation
+        # If confirmed, add to the dictionary
+        # This dictionary likely needs to be exported then reimported on load
+        # Hold it in a json?
+
+        with open(r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\risk_dictionaries\new_renewal.json') as json_file:
+            data = json.load(json_file)
+        
+        
+
         pass
 
 
@@ -142,4 +156,14 @@ class RiskBdxCleaner(BdxCleaner):
             print('All tests have passed!')
         else:
             print('Bordereaux rejected.')
+    
+
+    def run_all_processing_functions(self):
+        """Once all the tests have passed, we can run all the processing steps.
+        """
+        self.username_input()
+        self.date_code_run()
+        self.add_file_name()
+        self.drop_gdpr_fields()
+        self.new_or_renewal()
 

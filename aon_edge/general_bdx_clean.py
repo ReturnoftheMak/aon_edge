@@ -47,11 +47,11 @@ class BdxCleaner(object):
         """
 
         # Lookup the header row to use, maybe we shouldn't hard code these
-        var_dict = {'claim':2,'risk':0,'premium':0}
+        header_dict = {'claim':2,'risk':0,'premium':0}
         id_dict = {'claim':'ID_Claim', 'risk':'ID_PolicyStem', 'premium':'ID_PolicyStem'}
 
         # Read the excel in with specified vars
-        df = pd.read_excel(self.file, sheet_name=0, header=var_dict[self.bdx_type])
+        df = pd.read_excel(self.file, sheet_name=0, header=header_dict[self.bdx_type])
 
         # Map cols using the dictionary
         df = df.rename(columns=self.get_mapping())

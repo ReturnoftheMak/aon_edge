@@ -146,8 +146,8 @@ class ClaimBdxCleaner(BdxCleaner):
 
 # %% Actually running the class
 
-
-claim_bdx = ClaimBdxCleaner(variables)
+# 
+claim_bdx = ClaimBdxCleaner('filepath_string', dict())
 
 claim_bdx.run_all_checks()
 claim_bdx.export_to_sql(vars)
