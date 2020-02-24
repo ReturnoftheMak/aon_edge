@@ -1,12 +1,7 @@
 # %% Package Imports
 
 import pandas as pd
-from general_bdx_clean import BdxCleaner
-
-
-# %% Set Params
-
-mapping_file = r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\risk_WITHACTIONS.xlsx'
+from general_bdx_clean import BdxCleaner, mappings, header_dict, id_dict
 
 
 # %% Cleaning function for risk bordereaux
@@ -68,7 +63,7 @@ class RiskBdxCleaner(BdxCleaner):
         # Require a certain threshold, request confirmation
         # If confirmed, add to the dictionary
         # This dictionary likely needs to be exported then reimported on load
-        # Hold it in a json?
+        # Hold it in a json, in a directory of dictionaries
 
         with open(r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\risk_dictionaries\new_renewal.json') as json_file:
             data = json.load(json_file)
@@ -80,9 +75,10 @@ class RiskBdxCleaner(BdxCleaner):
         # Firstly, we'll take a look at the values in the data dict to see if we can match close to one
         if len(unmapped_statuses) > 0:
             for status in unmapped_statuses:
+                # Is it close to one of the accepted dictionary values?
                 best_value_match = process.extractOne(status.lower(), list(data.values()))
                 if best_value_match[1] > 90:
-                    # Prompt to accept the match
+                    # Prompt to accept the match if it hits above a threshold
                     while True:
                         answer = input("Should {0} be mapped to {1}? (y/n)".format(status, best_value_match[0]))
                         if answer.lower() not in ('y', 'n'):

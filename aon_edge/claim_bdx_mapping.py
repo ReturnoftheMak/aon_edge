@@ -4,11 +4,6 @@ import pandas as pd
 from general_bdx_clean import BdxCleaner, mappings, header_dict, id_dict
 
 
-# %% Mapping file location
-
-mapping_file = r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\claim_WITHACTIONS.xlsx'
-
-
 # %% Claims class - using inheritance
 
 class ClaimBdxCleaner(BdxCleaner):
@@ -61,7 +56,7 @@ class ClaimBdxCleaner(BdxCleaner):
         """This is for running all the checks you might need in a sequential fashion
         that breaks once a test fails.
 
-        Grace requests that the tests all run, with the option to 
+        Grace requests that the tests all run, with the option to accept the rejected rows or not
         """
         # First check that the incurred matches
         test_inc, df_false_inc = self.incurred_check()
