@@ -10,15 +10,21 @@ mappings = {'claim':r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pric
             'risk':r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\risk_WITHACTIONS.xlsx',
             'premium':r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\premium_WITHACTIONS.xlsx'}
 
+header_dict = {'claim':2,'risk':0,'premium':0}
+
+id_dict = {'claim':'ID_Claim', 'risk':'ID_PolicyStem', 'premium':'ID_PolicyStem'}
+
 
 # %% Lets try to make use of inheritance here
 
 class BdxCleaner(object):
     """Base Class for cleaning bordereaux for AON Edge
     """
-    def __init__(self, bdx_file, mappings, bdx_type):
+    def __init__(self, bdx_file, mappings, headers, IDs, bdx_type):
         self.file = bdx_file
         self.mappings = mappings
+        self.headers = headers
+        self.IDs = IDs
         self.bdx_type = bdx_type
         self.dataframe = self.basic_cleaning()
 
@@ -29,10 +35,10 @@ class BdxCleaner(object):
         """
 
         # Read in the mapping file
-        df_claim_mapping = pd.read_excel(self.mappings[self.bdx_type])
+        df_mapping = pd.read_excel(self.mappings[self.bdx_type])
 
-        keys = df_claim_mapping.ColumnNames
-        values = df_claim_mapping.Rename
+        keys = df_mapping.ColumnNames
+        values = df_mapping.Rename
 
         mapping_dict = dict(zip(keys, values))
 
@@ -46,19 +52,15 @@ class BdxCleaner(object):
         Lastly the function drops any 
         """
 
-        # Lookup the header row to use, maybe we shouldn't hard code these
-        header_dict = {'claim':2,'risk':0,'premium':0}
-        id_dict = {'claim':'ID_Claim', 'risk':'ID_PolicyStem', 'premium':'ID_PolicyStem'}
-
         # Read the excel in with specified vars
-        df = pd.read_excel(self.file, sheet_name=0, header=header_dict[self.bdx_type])
+        df = pd.read_excel(self.file, sheet_name=0, header=self.headers[self.bdx_type])
 
         # Map cols using the dictionary
         df = df.rename(columns=self.get_mapping())
         df = df[[col for col in df.columns if type(col) is not float]]
 
         # Drop any subtotal rows
-        df.dropna(axis=0, how='any', subset=id_dict[self.bdx_type], inplace=True)
+        df.dropna(axis=0, how='any', subset=self.IDs[self.bdx_type], inplace=True)
 
         return df
 

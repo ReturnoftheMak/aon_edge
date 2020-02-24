@@ -40,9 +40,11 @@ def risk_bdx_clean(file, mapping_dict):
 class RiskBdxCleaner(BdxCleaner):
     """Used to clean AON Edge Risk bordereaux, inherits methods from BdxCleaner
     """
-    def __init__(self, bdx_file, mappings):
+    def __init__(self, bdx_file, mappings, headers, IDs):
         self.file = bdx_file
         self.mappings = mappings
+        self.headers = headers
+        self.IDs = IDs
         self.bdx_type = 'risk'
         self.dataframe = self.basic_cleaning()
         self.test_var = True
@@ -58,7 +60,7 @@ class RiskBdxCleaner(BdxCleaner):
     def new_or_renewal(self):
         """Map any rows which are not 'New' or 'Renewal'
         """
-        from fuzzywuzzy import fuzz
+        from fuzzywuzzy import process
         import json
 
         # could use a fillna here? but with what?
@@ -71,7 +73,40 @@ class RiskBdxCleaner(BdxCleaner):
         with open(r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\risk_dictionaries\new_renewal.json') as json_file:
             data = json.load(json_file)
         
-        
+        status_list = list(self.dataframe.Status_NewRenew.unique())
+
+        unmapped_statuses = [status for status in status_list if status not in list(data.keys())]
+
+        # Firstly, we'll take a look at the values in the data dict to see if we can match close to one
+        if len(unmapped_statuses) > 0:
+            for status in unmapped_statuses:
+                best_value_match = process.extractOne(status.lower(), list(data.values()))
+                if best_value_match[1] > 90:
+                    # Prompt to accept the match
+                    while True:
+                        answer = input("Should {0} be mapped to {1}? (y/n)".format(status, best_value_match[0]))
+                        if answer.lower() not in ('y', 'n'):
+                            print('Invalid response, please try again')
+                        else:
+                            break
+                else:
+                    answer = 'n'
+                
+                if answer == 'y':
+                    data[status] = best_value_match[0]
+                else:
+                    while True:
+                        label = input("Map {0} to New/Renewal? (N/R)")
+                        if answer.lower() not in ('n', 'r'):
+                            print('Invalid response, please try again')
+                        else:
+                            break
+                    data[status] = label
+        else:
+            pass
+
+        with open(r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\risk_dictionaries\new_renewal.json') as json_file:
+            json.dump(data, json_file)
 
         pass
 
