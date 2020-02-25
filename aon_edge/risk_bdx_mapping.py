@@ -43,9 +43,9 @@ class RiskBdxCleaner(BdxCleaner):
         self.IDs = IDs
         self.sheets = sheet_dict
         self.bdx_type = 'risk'
+        self.xl_file = openpyxl.load_workbook(self.file, read_only=True, data_only=True)
         self.dataframe = self.basic_cleaning()
         self.test_var = True
-        self.xl_file = openpyxl.load_workbook(self.file, read_only=True, data_only=True)
         self.new_renewal_mapping = {}
         
 

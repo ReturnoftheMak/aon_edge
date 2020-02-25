@@ -78,7 +78,9 @@ class BdxCleaner(object):
 
             df_list = []
 
-            for sheet in self.xl_file.sheetnames:
+            sheet_names = [sheet for sheet in self.xl_file.sheetnames if 'taxes' not in sheet.lower()]
+
+            for sheet in sheet_names:
 
                 # Read the excel in with specified vars
                 df_i = pd.read_excel(self.file, sheet_name=sheet, header=self.find_header_row(sheet))

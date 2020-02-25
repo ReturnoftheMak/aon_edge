@@ -17,9 +17,9 @@ class ClaimBdxCleaner(BdxCleaner):
         self.IDs = IDs
         self.sheets = sheet_dict
         self.bdx_type = 'claim'
+        self.xl_file = openpyxl.load_workbook(self.file, read_only=True, data_only=True)
         self.dataframe = self.basic_cleaning()
         self.test_var = True
-        self.xl_file = openpyxl.load_workbook(self.file, read_only=True, data_only=True)
 
 
     def incurred_check(self):
