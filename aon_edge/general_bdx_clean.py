@@ -7,12 +7,12 @@ from sql_connection import sql_connection
 # %% Global vars, probably best to define in main
 
 mappings = {'claim':r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\claim_WITHACTIONS.xlsx',
-            'risk':r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\risk_WITHACTIONS.xlsx',
+            'risk':r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\risk_WITHACTIONS_V2.xlsx',
             'premium':r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\premium_WITHACTIONS.xlsx'}
 
-header_dict = {'claim':2,'risk':0,'premium':0}
+header_dict = {'claim':2,'risk':['Policy Nbr', 'Policy Number'],'premium':0}
 
-id_dict = {'claim':'ID_Claim', 'risk':'ID_PolicyStem', 'premium':'ID_PolicyStem'}
+id_dict = {'claim':'ID_Claim', 'risk':'ID_Policy_UNCLEANSED', 'premium':'ID_PolicyStem'}
 
 
 # %% Lets try to make use of inheritance here
@@ -43,6 +43,24 @@ class BdxCleaner(object):
         mapping_dict = dict(zip(keys, values))
 
         return mapping_dict
+    
+
+    def find_header_row(self):
+        """If the header is always the same place, the dict will have an integer
+        Else a list of headers to look for and this function will return the row
+        """
+        if self.headers[self.bdx_type] is int:
+            return self.headers[self.bdx_type]
+        else:
+            import openpyxl
+            file = openpyxl.load_workbook(self.file, read_only=True, data_only=True)
+
+            worksheet = file[file.sheetnames[0]]
+
+            for row in worksheet.iter_rows(max_row=20):
+                for cell in row:
+                    if cell.value in self.headers[self.bdx_type]:
+                        return cell.row-1
 
 
     def basic_cleaning(self):
@@ -53,7 +71,7 @@ class BdxCleaner(object):
         """
 
         # Read the excel in with specified vars
-        df = pd.read_excel(self.file, sheet_name=0, header=self.headers[self.bdx_type])
+        df = pd.read_excel(self.file, sheet_name=0, header=self.find_header_row())
 
         # Map cols using the dictionary
         df = df.rename(columns=self.get_mapping())
@@ -63,7 +81,7 @@ class BdxCleaner(object):
         df.dropna(axis=0, how='any', subset=[self.IDs[self.bdx_type]], inplace=True)
 
         return df
-    
+
 
     def username_input(self):
         """Add in a username for whoever ran the code
