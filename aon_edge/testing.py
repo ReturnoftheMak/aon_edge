@@ -75,6 +75,7 @@ def cumulative_risk_bdx(bdx_list, mappings, header_dict, id_dict, sheet_dict):
     for file in bdx_list:
         print(file)
         risk_bdx = RiskBdxCleaner(file, mappings, header_dict, id_dict, sheet_dict)
+        print('Object initialised')
         risk_bdx.run_all_checks()
         risk_bdx.run_all_processing_functions()
         df_list.append(risk_bdx.dataframe)

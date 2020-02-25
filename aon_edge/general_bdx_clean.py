@@ -79,6 +79,7 @@ class BdxCleaner(object):
             df_list = []
 
             sheet_names = [sheet for sheet in self.xl_file.sheetnames if 'taxes' not in sheet.lower()]
+            sheet_names = [sheet for sheet in sheet_names if 'pivot' not in sheet.lower()]
 
             for sheet in sheet_names:
 
