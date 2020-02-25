@@ -1,6 +1,7 @@
 # %% Package Imports
 
 import pandas as pd
+import openpyxl
 from sql_connection import sql_connection
 
 
@@ -14,19 +15,23 @@ header_dict = {'claim':2,'risk':['Policy Nbr', 'Policy Number'],'premium':0}
 
 id_dict = {'claim':'ID_Claim', 'risk':'ID_Policy_UNCLEANSED', 'premium':'ID_PolicyStem'}
 
+sheet_dict = {'claim':False, 'risk':True, 'premium':False}
+
 
 # %% Lets try to make use of inheritance here
 
 class BdxCleaner(object):
     """Base Class for cleaning bordereaux for AON Edge
     """
-    def __init__(self, bdx_file, mappings, headers, IDs, bdx_type):
+    def __init__(self, bdx_file, mappings, headers, IDs, sheet_dict, bdx_type):
         self.file = bdx_file
         self.mappings = mappings
         self.headers = headers
         self.IDs = IDs
+        self.sheets = sheet_dict
         self.bdx_type = bdx_type
         self.dataframe = self.basic_cleaning()
+        self.xl_file = openpyxl.load_workbook(self.file, read_only=True, data_only=True)
 
 
     def get_mapping(self):
@@ -45,17 +50,14 @@ class BdxCleaner(object):
         return mapping_dict
     
 
-    def find_header_row(self):
+    def find_header_row(self, sheet):
         """If the header is always the same place, the dict will have an integer
         Else a list of headers to look for and this function will return the row
         """
         if self.headers[self.bdx_type] is int:
             return self.headers[self.bdx_type]
         else:
-            import openpyxl
-            file = openpyxl.load_workbook(self.file, read_only=True, data_only=True)
-
-            worksheet = file[file.sheetnames[0]]
+            worksheet = self.xl_file[sheet]
 
             for row in worksheet.iter_rows(max_row=20):
                 for cell in row:
@@ -67,18 +69,41 @@ class BdxCleaner(object):
         """Cleaning steps to be applied to any bordereaux, utilising mappings.
         Reads in the excel file, taking the first sheet only, with a header row based on type of bdx.
         Then utilises the column mapping to rename the columns and drop any columns which were not mapped.
-        Lastly the function drops any 
+        Lastly the function drops any rows which don't have a value in the relevant ID column 
+
+        For a value of true in self.sheets, the function gets all the sheets in the file, else only 1st
         """
 
-        # Read the excel in with specified vars
-        df = pd.read_excel(self.file, sheet_name=0, header=self.find_header_row())
+        if self.sheets[self.bdx_type]:
 
-        # Map cols using the dictionary
-        df = df.rename(columns=self.get_mapping())
-        df = df[[col for col in df.columns if type(col) is not float]]
+            df_list = []
 
-        # Drop any subtotal rows
-        df.dropna(axis=0, how='any', subset=[self.IDs[self.bdx_type]], inplace=True)
+            for sheet in self.xl_file.sheetnames:
+
+                # Read the excel in with specified vars
+                df_i = pd.read_excel(self.file, sheet_name=sheet, header=self.find_header_row(sheet))
+
+                # Map cols using the dictionary
+                df_i = df_i.rename(columns=self.get_mapping())
+                df_i = df_i[[col for col in df_i.columns if type(col) is not float]]
+
+                # Drop any subtotal rows
+                df_i.dropna(axis=0, how='any', subset=[self.IDs[self.bdx_type]], inplace=True)
+
+                df_list.append(df_i)
+
+                df = pd.concat(df_list, ignore_index=True)
+        
+        else:
+            # Read the excel in with specified vars
+            df = pd.read_excel(self.file, sheet_name=0, header=self.find_header_row())
+
+            # Map cols using the dictionary
+            df = df.rename(columns=self.get_mapping())
+            df = df[[col for col in df.columns if type(col) is not float]]
+
+            # Drop any subtotal rows
+            df.dropna(axis=0, how='any', subset=[self.IDs[self.bdx_type]], inplace=True)
 
         return df
 

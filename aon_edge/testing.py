@@ -36,6 +36,8 @@ def full_claim_bdx(bdx_list, mappings, header_dict, id_dict):
 
     df_list = []
 
+    bdx_list = [file for file in bdx_list if '$' not in file]
+
     for file in bdx_list:
         print(file)
         claim_bdx = ClaimBdxCleaner(file, mappings, header_dict, id_dict)
@@ -67,6 +69,8 @@ def cumulative_risk_bdx(bdx_list, mappings, header_dict, id_dict):
     """
 
     df_list = []
+
+    bdx_list = [file for file in bdx_list if '$' not in file]
 
     for file in bdx_list:
         print(file)

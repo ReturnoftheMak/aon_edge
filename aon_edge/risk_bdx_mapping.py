@@ -100,11 +100,12 @@ class RiskBdxCleaner(BdxCleaner):
                             else:
                                 break
                         data[status] = label
+
+                with open(r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\risk_dictionaries\new_renewal.json') as json_file:
+                    json.dump(data, json_file)
             else:
                 pass
 
-            with open(r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\risk_dictionaries\new_renewal.json') as json_file:
-                json.dump(data, json_file)
         else:
             pass
 
@@ -177,4 +178,6 @@ class RiskBdxCleaner(BdxCleaner):
         self.add_file_name()
         self.drop_gdpr_fields()
         self.new_or_renewal()
+
+        print('Processing steps complete!')
 
