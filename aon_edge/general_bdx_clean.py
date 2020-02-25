@@ -96,10 +96,10 @@ class BdxCleaner(object):
                 df_list.append(df_i)
 
                 df = pd.concat(df_list, ignore_index=True)
-        
+
         else:
             # Read the excel in with specified vars
-            df = pd.read_excel(self.file, sheet_name=0, header=self.find_header_row())
+            df = pd.read_excel(self.file, sheet_name=0, header=self.find_header_row(sheet))
 
             # Map cols using the dictionary
             df = df.rename(columns=self.get_mapping())

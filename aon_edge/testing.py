@@ -12,8 +12,7 @@ from sql_connection import sql_connection
 
 directory = r"\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly"
 claims_bdx = glob.glob(directory + r"\**\Claims\*.xls*")
-
-claims_test = claims_bdx[-15:]
+risk_bdx_list = glob.glob(directory + r"\**\Risk\*.xls*")
 
 
 # %% 
@@ -89,11 +88,9 @@ def cumulative_risk_bdx(bdx_list, mappings, header_dict, id_dict, sheet_dict):
 
 # %% execute risk
 
-risk_bdx_list = glob.glob(directory + r"\**\Risk\*.xls*")
-
 df_combined = cumulative_risk_bdx(risk_bdx_list, mappings, header_dict, id_dict, sheet_dict)
 
-df_combined.to_sql('NFS_Combined_Risk', sql_con, schema='bdx', if_exists='replace', index=False)
+df_combined.to_sql('NFS_Combined_Risk', sql_con, schema='bdx', if_exists='replace', index=False, chunksize=1000)
 
 
 
