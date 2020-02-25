@@ -55,56 +55,58 @@ class RiskBdxCleaner(BdxCleaner):
     def new_or_renewal(self):
         """Map any rows which are not 'New' or 'Renewal'
         """
-        from fuzzywuzzy import process
-        import json
 
-        # could use a fillna here? but with what?
-        # use fuzz.partial_ratio to compare to New/Renewal
-        # Require a certain threshold, request confirmation
-        # If confirmed, add to the dictionary
-        # This dictionary likely needs to be exported then reimported on load
-        # Hold it in a json, in a directory of dictionaries
+        if 'Status_NewRenew' in self.dataframe.columns:
+            from fuzzywuzzy import process
+            import json
 
-        with open(r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\risk_dictionaries\new_renewal.json') as json_file:
-            data = json.load(json_file)
-        
-        status_list = list(self.dataframe.Status_NewRenew.unique())
+            # could use a fillna here? but with what?
+            # use fuzz.partial_ratio to compare to New/Renewal
+            # Require a certain threshold, request confirmation
+            # If confirmed, add to the dictionary
+            # This dictionary likely needs to be exported then reimported on load
+            # Hold it in a json, in a directory of dictionaries
 
-        unmapped_statuses = [status for status in status_list if status not in list(data.keys())]
+            with open(r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\risk_dictionaries\new_renewal.json') as json_file:
+                data = json.load(json_file)
+            
+            status_list = list(self.dataframe.Status_NewRenew.unique())
 
-        # Firstly, we'll take a look at the values in the data dict to see if we can match close to one
-        if len(unmapped_statuses) > 0:
-            for status in unmapped_statuses:
-                # Is it close to one of the accepted dictionary values?
-                best_value_match = process.extractOne(status.lower(), list(data.values()))
-                if best_value_match[1] > 90:
-                    # Prompt to accept the match if it hits above a threshold
-                    while True:
-                        answer = input("Should {0} be mapped to {1}? (y/n)".format(status, best_value_match[0]))
-                        if answer.lower() not in ('y', 'n'):
-                            print('Invalid response, please try again')
-                        else:
-                            break
-                else:
-                    answer = 'n'
-                
-                if answer == 'y':
-                    data[status] = best_value_match[0]
-                else:
-                    while True:
-                        label = input("Map {0} to New/Renewal? (N/R)")
-                        if answer.lower() not in ('n', 'r'):
-                            print('Invalid response, please try again')
-                        else:
-                            break
-                    data[status] = label
+            unmapped_statuses = [status for status in status_list if status not in list(data.keys())]
+
+            # Firstly, we'll take a look at the values in the data dict to see if we can match close to one
+            if len(unmapped_statuses) > 0:
+                for status in unmapped_statuses:
+                    # Is it close to one of the accepted dictionary values?
+                    best_value_match = process.extractOne(status.lower(), list(data.values()))
+                    if best_value_match[1] > 90:
+                        # Prompt to accept the match if it hits above a threshold
+                        while True:
+                            answer = input("Should {0} be mapped to {1}? (y/n)".format(status, best_value_match[0]))
+                            if answer.lower() not in ('y', 'n'):
+                                print('Invalid response, please try again')
+                            else:
+                                break
+                    else:
+                        answer = 'n'
+                    
+                    if answer == 'y':
+                        data[status] = best_value_match[0]
+                    else:
+                        while True:
+                            label = input("Map {0} to New/Renewal? (N/R)")
+                            if answer.lower() not in ('n', 'r'):
+                                print('Invalid response, please try again')
+                            else:
+                                break
+                        data[status] = label
+            else:
+                pass
+
+            with open(r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\risk_dictionaries\new_renewal.json') as json_file:
+                json.dump(data, json_file)
         else:
             pass
-
-        with open(r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\risk_dictionaries\new_renewal.json') as json_file:
-            json.dump(data, json_file)
-
-        pass
 
 
     def premium_checks(self):
@@ -136,7 +138,10 @@ class RiskBdxCleaner(BdxCleaner):
         """Drop GDPR sensitive fields
         """
         # May need to test if these are in bdx first
-        self.dataframe = self.dataframe.drop(labels=['Name_Broker'], axis=1)
+        if 'Name_Broker' in self.dataframe.columns:
+            self.dataframe = self.dataframe.drop(labels=['Name_Broker'], axis=1)
+        else:
+            pass
 
 
     def prior_loss_flag(self):
