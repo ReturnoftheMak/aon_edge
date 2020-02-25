@@ -1,7 +1,7 @@
 # %% Package imports
 
 import pandas as pd
-from general_bdx_clean import BdxCleaner, mappings, header_dict, id_dict
+from general_bdx_clean import BdxCleaner, mappings, header_dict, id_dict, sheet_dict
 
 
 # %% Claims class - using inheritance
@@ -9,11 +9,12 @@ from general_bdx_clean import BdxCleaner, mappings, header_dict, id_dict
 class ClaimBdxCleaner(BdxCleaner):
     """Used to clean AON Edge Claims bordereaux, inherits methods from BdxCleaner
     """
-    def __init__(self, bdx_file, mappings, headers, IDs):
+    def __init__(self, bdx_file, mappings, headers, IDs, sheet_dict):
         self.file = bdx_file
         self.mappings = mappings
         self.headers = headers
         self.IDs = IDs
+        self.sheets = sheet_dict
         self.bdx_type = 'claim'
         self.dataframe = self.basic_cleaning()
         self.test_var = True

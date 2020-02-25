@@ -4,7 +4,7 @@ import glob
 import pandas as pd
 from claim_bdx_mapping import ClaimBdxCleaner
 from risk_bdx_mapping import RiskBdxCleaner
-from general_bdx_clean import mappings, header_dict, id_dict
+from general_bdx_clean import mappings, header_dict, id_dict, sheet_dict
 from sql_connection import sql_connection
 
 
@@ -29,7 +29,7 @@ claim_bdx.export_to_sql()
 
 # Try claims first, get all the bdx in with reporting period tag and evaluate headers
 
-def full_claim_bdx(bdx_list, mappings, header_dict, id_dict):
+def full_claim_bdx(bdx_list, mappings, header_dict, id_dict, sheet_dict):
     """For all the bdx provided, run the checks and processing steps
     then return a combined table.
     """
@@ -63,7 +63,7 @@ df_combined.to_sql('NFS_Combined_Claims', sql_con, schema='bdx', if_exists='repl
 
 # %% Risk Cumulative Bordereaux
 
-def cumulative_risk_bdx(bdx_list, mappings, header_dict, id_dict):
+def cumulative_risk_bdx(bdx_list, mappings, header_dict, id_dict, sheet_dict):
     """For all the bdx provided, run the checks and processing steps
     then return a combined table.
     """

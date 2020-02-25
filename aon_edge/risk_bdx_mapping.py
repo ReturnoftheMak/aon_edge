@@ -1,7 +1,7 @@
 # %% Package Imports
 
 import pandas as pd
-from general_bdx_clean import BdxCleaner, mappings, header_dict, id_dict
+from general_bdx_clean import BdxCleaner, mappings, header_dict, id_dict, sheet_dict
 
 
 # %% Cleaning function for risk bordereaux
@@ -35,11 +35,12 @@ def risk_bdx_clean(file, mapping_dict):
 class RiskBdxCleaner(BdxCleaner):
     """Used to clean AON Edge Risk bordereaux, inherits methods from BdxCleaner
     """
-    def __init__(self, bdx_file, mappings, headers, IDs):
+    def __init__(self, bdx_file, mappings, headers, IDs, sheet_dict):
         self.file = bdx_file
         self.mappings = mappings
         self.headers = headers
         self.IDs = IDs
+        self.sheets = sheet_dict
         self.bdx_type = 'risk'
         self.dataframe = self.basic_cleaning()
         self.test_var = True
