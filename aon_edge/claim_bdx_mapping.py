@@ -92,6 +92,9 @@ class ClaimBdxCleaner(BdxCleaner):
         """
         # Maybe add a print output to this one?
         self.drop_gdpr_fields()
+        self.username_input()
+        self.date_code_run()
+        self.add_file_name()
 
     
 
@@ -99,8 +102,5 @@ class ClaimBdxCleaner(BdxCleaner):
 # %% Actually running the class
 
 # 
-claim_bdx = ClaimBdxCleaner('filepath_string', mappings, header_dict, id_dict)
 
-claim_bdx.run_all_checks()
-claim_bdx.export_to_sql(vars)
 

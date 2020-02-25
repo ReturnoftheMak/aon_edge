@@ -60,9 +60,36 @@ class BdxCleaner(object):
         df = df[[col for col in df.columns if type(col) is not float]]
 
         # Drop any subtotal rows
-        df.dropna(axis=0, how='any', subset=self.IDs[self.bdx_type], inplace=True)
+        df.dropna(axis=0, how='any', subset=[self.IDs[self.bdx_type]], inplace=True)
 
         return df
+    
+
+    def username_input(self):
+        """Add in a username for whoever ran the code
+        """
+        from getpass import getuser
+        user = getuser()
+        self.dataframe['Updated_Name'] = user
+
+
+    def date_code_run(self):
+        """Adding in a run date for the df.
+        May need to be done just prior to upload after all checks have passed
+        """
+        from datetime import date
+        today = date.today()
+        self.dataframe['Updated_Date'] = today
+
+
+    def add_file_name(self):
+        """Add in the name of the file into the dataframe
+        """
+        from pathlib import Path
+        file_name = Path(self.file).stem
+        bdx_month = Path(self.file).parent.parent.stem
+        self.dataframe['Updated_Source'] = file_name
+        self.dataframe['Bordereau_Month'] = bdx_month
 
 
     def export_to_sql(self, df, server_name, database_name, table_name):

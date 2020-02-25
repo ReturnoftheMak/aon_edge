@@ -151,31 +151,6 @@ class RiskBdxCleaner(BdxCleaner):
         pass
 
 
-    def username_input(self):
-        """Add in a username for whoever ran the code
-        """
-        from getpass import getuser
-        user = getuser()
-        self.dataframe['Updated_Name'] = user
-
-
-    def date_code_run(self):
-        """Adding in a run date for the df.
-        May need to be done just prior to upload after all checks have passed
-        """
-        from datetime import date
-        today = date.today()
-        self.dataframe['Updated_Date'] = today
-
-
-    def add_file_name(self):
-        """Add in the name of the file into the dataframe
-        """
-        from pathlib import Path
-        file_name = Path(self.file).stem
-        self.dataframe['Updated_Source'] = file_name
-
-
     def run_all_checks(self):
         """This is for running all the checks you might need in a sequential fashion
         that breaks once a test fails.
