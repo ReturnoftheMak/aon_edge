@@ -5,7 +5,7 @@ import openpyxl
 from sql_connection import sql_connection
 
 
-# %% Global vars, probably best to define in main
+# %% Variables defined here are unique to Aon Edge
 
 mappings = {'claim':r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\claim_WITHACTIONS.xlsx',
             'risk':r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\_ColumnMapping\risk_WITHACTIONS_V2.xlsx',
@@ -30,8 +30,8 @@ class BdxCleaner(object):
         self.IDs = IDs
         self.sheets = sheet_dict
         self.bdx_type = bdx_type
-        self.dataframe = self.basic_cleaning()
         self.xl_file = openpyxl.load_workbook(self.file, read_only=True, data_only=True)
+        self.dataframe = self.basic_cleaning()        
 
 
     def get_mapping(self):
@@ -51,8 +51,8 @@ class BdxCleaner(object):
     
 
     def find_header_row(self, sheet):
-        """If the header is always the same place, the dict will have an integer
-        Else a list of headers to look for and this function will return the row
+        """If the header is always the same place, the dict passed in will have an integer,
+        else a list of headers to look for and this function will return the row
         """
         if self.headers[self.bdx_type] is int:
             return self.headers[self.bdx_type]
