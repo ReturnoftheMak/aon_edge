@@ -1,6 +1,7 @@
 # %% Package imports
 
 import pandas as pd
+import openpyxl
 from general_bdx_clean import BdxCleaner, mappings, header_dict, id_dict, sheet_dict
 
 
@@ -18,6 +19,7 @@ class ClaimBdxCleaner(BdxCleaner):
         self.bdx_type = 'claim'
         self.dataframe = self.basic_cleaning()
         self.test_var = True
+        self.xl_file = openpyxl.load_workbook(self.file, read_only=True, data_only=True)
 
 
     def incurred_check(self):

@@ -18,7 +18,7 @@ claims_test = claims_bdx[-15:]
 
 # %% 
 
-claim_bdx = ClaimBdxCleaner(claims_bdx[0], mappings, header_dict, id_dict)
+claim_bdx = ClaimBdxCleaner(claims_bdx[0], mappings, header_dict, id_dict, sheet_dict)
 
 claim_bdx.run_all_checks()
 claim_bdx.run_all_processing_functions()
@@ -40,7 +40,7 @@ def full_claim_bdx(bdx_list, mappings, header_dict, id_dict, sheet_dict):
 
     for file in bdx_list:
         print(file)
-        claim_bdx = ClaimBdxCleaner(file, mappings, header_dict, id_dict)
+        claim_bdx = ClaimBdxCleaner(file, mappings, header_dict, id_dict, sheet_dict)
         claim_bdx.run_all_checks()
         claim_bdx.run_all_processing_functions()
         df_list.append(claim_bdx.dataframe)
@@ -54,7 +54,7 @@ def full_claim_bdx(bdx_list, mappings, header_dict, id_dict, sheet_dict):
 
 # %% execute
 
-df_combined = full_claim_bdx(claims_bdx, mappings, header_dict, id_dict)
+df_combined = full_claim_bdx(claims_bdx, mappings, header_dict, id_dict, sheet_dict)
 
 sql_con = sql_connection('tcspmSMDB02', 'PricingDevelopment')
 
@@ -74,7 +74,7 @@ def cumulative_risk_bdx(bdx_list, mappings, header_dict, id_dict, sheet_dict):
 
     for file in bdx_list:
         print(file)
-        risk_bdx = RiskBdxCleaner(file, mappings, header_dict, id_dict)
+        risk_bdx = RiskBdxCleaner(file, mappings, header_dict, id_dict, sheet_dict)
         risk_bdx.run_all_checks()
         risk_bdx.run_all_processing_functions()
         df_list.append(risk_bdx.dataframe)
@@ -90,7 +90,7 @@ def cumulative_risk_bdx(bdx_list, mappings, header_dict, id_dict, sheet_dict):
 
 risk_bdx_list = glob.glob(directory + r"\**\Risk\*.xls*")
 
-df_combined = cumulative_risk_bdx(risk_bdx_list, mappings, header_dict, id_dict)
+df_combined = cumulative_risk_bdx(risk_bdx_list, mappings, header_dict, id_dict, sheet_dict)
 
 df_combined.to_sql('NFS_Combined_Risk', sql_con, schema='bdx', if_exists='replace', index=False)
 

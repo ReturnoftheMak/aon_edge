@@ -1,6 +1,7 @@
 # %% Package Imports
 
 import pandas as pd
+import openpyxl
 from general_bdx_clean import BdxCleaner, mappings, header_dict, id_dict, sheet_dict
 
 
@@ -44,7 +45,9 @@ class RiskBdxCleaner(BdxCleaner):
         self.bdx_type = 'risk'
         self.dataframe = self.basic_cleaning()
         self.test_var = True
+        self.xl_file = openpyxl.load_workbook(self.file, read_only=True, data_only=True)
         self.new_renewal_mapping = {}
+        
 
 
     def policy_ID_formatting(self):
