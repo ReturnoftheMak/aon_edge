@@ -47,7 +47,6 @@ class RiskBdxCleaner(BdxCleaner):
         self.dataframe = self.basic_cleaning()
         self.test_var = True
         self.new_renewal_mapping = {}
-        
 
 
     def policy_ID_formatting(self):

@@ -9,6 +9,9 @@ from general_bdx_clean import BdxCleaner, mappings, header_dict, id_dict, sheet_
 
 class ClaimBdxCleaner(BdxCleaner):
     """Used to clean AON Edge Claims bordereaux, inherits methods from BdxCleaner
+
+    Contains 2 main methods which aim to execute the rest of the smaller functions inside the
+    class. These are grouped into data checks and processing functions.
     """
     def __init__(self, bdx_file, mappings, headers, IDs, sheet_dict):
         self.file = bdx_file
@@ -30,6 +33,7 @@ class ClaimBdxCleaner(BdxCleaner):
         incurred_check = round(self.dataframe.Incurred,0) == round(self.dataframe.Incurred_Indemnity +
                                                                    self.dataframe.Incurred_Expenses +
                                                                    self.dataframe.Incurred_TPA_Fees, 0)
+
         df_false_inc = self.dataframe[~incurred_check]
 
         if len(df_false_inc) > 0:
@@ -38,7 +42,7 @@ class ClaimBdxCleaner(BdxCleaner):
         else:
             test_inc = True
             print('Incurred values match to nearest integer, test passed!')
-        
+
         return test_inc, df_false_inc
 
 
@@ -69,7 +73,7 @@ class ClaimBdxCleaner(BdxCleaner):
             pass
         else:
             df_false_inc.to_excel(r'\\svrtcs04\Syndicate Data\Actuarial\Pricing\2_Account_Pricing\NFS_Edge\Knowledge\Data_Received\Monthly\Rejected_Files\claims_incurred_non_matching.xlsx')
-        
+
         # Run the other checks in a similar way, but we only run the test function 
         # if the test_var is true which is to say the previous test has passed
         if self.test_var:
@@ -88,7 +92,7 @@ class ClaimBdxCleaner(BdxCleaner):
             print('All tests have passed!')
         else:
             print('Bordereaux rejected.')
-    
+
 
     def run_all_processing_functions(self):
         """Once all the tests have passed, we can run all the processing steps.
@@ -98,12 +102,4 @@ class ClaimBdxCleaner(BdxCleaner):
         self.username_input()
         self.date_code_run()
         self.add_file_name()
-
-    
-
-
-# %% Actually running the class
-
-# 
-
 

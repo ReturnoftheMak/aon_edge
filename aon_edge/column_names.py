@@ -27,6 +27,9 @@ claims_bdx = glob.glob(directory + r"\**\Claims\*.xls*")
 
 def get_col_names_by_month_and_unique(bdx_list, header_var=0):
     """Retrieve list of column names from the list of bdx provided
+
+    NB: this doesn't provide flexibility for different header types,
+    Possibly use the header finder in general_bdx_clean here instead
     """
 
     col_names_dict = {}
