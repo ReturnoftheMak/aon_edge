@@ -28,6 +28,13 @@ class ClaimBdxCleaner(BdxCleaner):
     def incurred_check(self):
         """Does the incurred approximately match in all rows?
         If not, export the rows which do not to an error log.
+
+        Args:
+            None
+
+        Returns:
+            test_inc (Boolean): variable to say whether the test has passed
+            df_false_inc (pandas.core.frames.DataFrame): df of any failing rows
         """
 
         incurred_check = round(self.dataframe.Incurred,0) == round(self.dataframe.Incurred_Indemnity +
