@@ -55,6 +55,8 @@ class ClaimBdxCleaner(BdxCleaner):
 
     def other_claims_checks(self):
         """Enter other checks here or in similar functions
+
+        words
         """
         return True
 

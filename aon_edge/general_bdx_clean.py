@@ -202,5 +202,5 @@ class BdxCleaner(object):
 
         sql_con = sql_connection(server_name, database_name)
 
-        df.to_sql(table_name, sql_con, schema=schema if_exists='replace')
+        df.to_sql(table_name, sql_con, schema=schema, if_exists='replace')
 

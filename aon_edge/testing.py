@@ -93,4 +93,6 @@ df_combined = cumulative_risk_bdx(risk_bdx_list, mappings, header_dict, id_dict,
 df_combined.to_sql('NFS_Combined_Risk', sql_con, schema='bdx', if_exists='replace', index=False, chunksize=1000)
 
 
+# %% Are columns null
 
+df_combined.isnull().sum()/len(df_combined)*100
